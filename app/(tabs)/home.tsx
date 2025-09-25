@@ -1,11 +1,22 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { HeaderComponent } from '@/components/header';
-import { Button, TextInput } from 'react-native-paper';
+import { Button, SegmentedButtons, TextInput } from 'react-native-paper';
+
+const styles = StyleSheet.create({
+    ctaButtonToggle: {
+        marginTop: "20%",
+    },
+    ctaButton: {
+        marginTop: "20%",
+    },
+})
 
 const HomeComponent = () => {
-    const [text, setText] = React.useState("");
+    const [startLocation, setStartLocation] = React.useState("");
+     const [toLocation, setToLocation] = React.useState("");
+    const [value, setValue] = React.useState('');
   return (
 
     <View >
@@ -14,22 +25,40 @@ const HomeComponent = () => {
   <view style={{padding:40, marginTop:30, width:'80%'}}>
    <TextInput
       label="Enter start location"
-      value={text}
+      value={startLocation}
       mode='outlined'
-     
-      onChangeText={text => setText(text)}
+      onChangeText={text => setStartLocation(text)}
+      right={<TextInput.Icon icon="close" onPress={() => setStartLocation("")} />}
     />
     <TextInput
     style={{marginTop:30}}
       label="Enter end location"
-      value={text}
+      value={toLocation}
       mode='outlined'
-      onChangeText={text => setText(text)}
+      onChangeText={text => setToLocation(text)}
+      right={<TextInput.Icon icon="close" onPress={() => setToLocation("")} />}
     />
 
-    <Button  mode="contained" onPress={() => console.log('Pressed')}>
+    <Button  mode="contained" onPress={() => console.log('Pressed')} style={styles.ctaButton}>
    Calculate Miles
   </Button>
+
+  <View style={styles.ctaButtonToggle}>
+      <SegmentedButtons
+        value={value}
+        onValueChange={setValue}
+        buttons={[
+          {
+            value: 'mile',
+            label: 'Miles',
+          },
+          {
+            value: 'KM',
+            label: 'Kilometres',
+          }
+        ]}
+      />
+    </View>
   </view>
 
     </View>

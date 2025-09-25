@@ -5,14 +5,14 @@ import { Appbar } from "react-native-paper";
 const styles = StyleSheet.create({
   headerContainer: {
     backgroundColor: "#fff",
-    elevation: 4, // shadow for Android
-    shadowColor: "#000", // shadow for iOS
+    elevation: 4, 
+    shadowColor: "#000", 
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 3,
   },
   header: {
-    backgroundColor: "#6200ee", // theme color
+    backgroundColor: "#6200ee", 
   },
   headerTitle: {
     color: "white",
