@@ -18,20 +18,9 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
-  headingSection: {
-    borderBottomWidth: 2,
-    borderBottomColor: '#ccc',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: '#f9f9f9',
-  },
-  headingText: {
-    fontWeight: '600',
-    color: '#333',
-  },
 });
 
-export function HeaderComponent() {
+export default function HeaderComponent() {
   return (
     <View style={styles.headerContainer}>
       <Appbar.Header style={styles.header} mode="center-aligned">

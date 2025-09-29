@@ -1,1 +1,2 @@
-// Export all from this directory
+export { default as HeaderComponent } from './header';
+

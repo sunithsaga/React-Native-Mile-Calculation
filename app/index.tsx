@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { HeaderComponent } from '@/components/ui/header';
+import { HeaderComponent } from '@/components/ui';
 import { Button, SegmentedButtons, TextInput } from 'react-native-paper';
 
 const styles = StyleSheet.create({
