@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { HeaderComponent } from '@/components/ui';
 import { Button, SegmentedButtons, TextInput } from 'react-native-paper';
+import { CityList } from '@/services/api';
 
 const styles = StyleSheet.create({
   centerContainer: {
@@ -27,9 +28,38 @@ const styles = StyleSheet.create({
 });
 
 const HomeComponent = () => {
-  const [startLocation, setStartLocation] = React.useState('');
-  const [toLocation, setToLocation] = React.useState('');
-  const [value, setValue] = React.useState('');
+  const [startLocation, setStartLocation] = useState('');
+  const [toLocation, setToLocation] = useState('');
+  const [value, setValue] = useState('');
+  const [citySuggestions, setCitySuggestions] = useState<any[]>([]); 
+  // Debounced API call
+  useEffect(() => {
+    if (startLocation.length < 2) {
+      setCitySuggestions([]);
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      getCityDetails(startLocation);
+    }, 500); // Wait 500ms after user stops typing
+
+    return () => clearTimeout(timeoutId);
+  }, [startLocation]);
+
+  const getCityDetails = (text: string) => {
+    CityList(text).then((res) => {
+      if (res && res.data) {
+        setCitySuggestions(res.data); // Store the API response
+        console.log('City suggestions:', res.data);
+      }
+    }).catch((err) => {
+      console.log('Error fetching cities:', err);
+    });
+  };
+
+  const handleStartLocationChange = (text: string) => {
+    setStartLocation(text);
+  };
   return (
     <View>
       <HeaderComponent />
@@ -39,7 +69,7 @@ const HomeComponent = () => {
             label="Enter start location"
             value={startLocation}
             mode="outlined"
-            onChangeText={(text) => setStartLocation(text)}
+            onChangeText={handleStartLocationChange}
             right={<TextInput.Icon icon="close" onPress={() => setStartLocation('')} />}
           />
           <TextInput
