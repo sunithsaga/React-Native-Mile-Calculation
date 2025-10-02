@@ -1,9 +1,14 @@
 import React, { use, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { HeaderComponent } from '@/components/ui';
 import { Button, SegmentedButtons, TextInput } from 'react-native-paper';
 import { CityList } from '@/services/api';
+import {
+  AutocompleteDropdown,
+  AutocompleteDropdownContextProvider,
+} from 'react-native-autocomplete-dropdown';
+import { Typehead } from '@/components/common';
 
 const styles = StyleSheet.create({
   centerContainer: {
@@ -31,7 +36,10 @@ const HomeComponent = () => {
   const [startLocation, setStartLocation] = useState('');
   const [toLocation, setToLocation] = useState('');
   const [value, setValue] = useState('');
-  const [citySuggestions, setCitySuggestions] = useState<any[]>([]); 
+  const [citySuggestions, setCitySuggestions] = useState<any[]>([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+  let dropdownData: any[] = [];
+
   // Debounced API call
   useEffect(() => {
     if (startLocation.length < 2) {
@@ -60,48 +68,49 @@ const HomeComponent = () => {
   const handleStartLocationChange = (text: string) => {
     setStartLocation(text);
   };
+
   return (
     <View>
       <HeaderComponent />
       <View style={styles.centerContainer}>
-        <view style={styles.inputWrapper}>
-          <TextInput
-            label="Enter start location"
-            value={startLocation}
-            mode="outlined"
-            onChangeText={handleStartLocationChange}
-            right={<TextInput.Icon icon="close" onPress={() => setStartLocation('')} />}
-          />
-          <TextInput
-            style={{ marginTop: 30 }}
-            label="Enter end location"
-            value={toLocation}
-            mode="outlined"
-            onChangeText={(text) => setToLocation(text)}
-            right={<TextInput.Icon icon="close" onPress={() => setToLocation('')} />}
-          />
+        <Typehead
+          data={citySuggestions}
+          onSelect={(item) => {
+            console.log('Selected item:', item);
+            setStartLocation(item.name);
+          }}
+          placeholder="Enter start location"
+          onInputChange={handleStartLocationChange}
+        />
+        <TextInput
+          style={{ marginTop: 30 }}
+          label="Enter end location"
+          value={toLocation}
+          mode="outlined"
+          onChangeText={(text) => setToLocation(text)}
+          right={<TextInput.Icon icon="close" onPress={() => setToLocation('')} />}
+        />
 
-          <Button mode="contained" onPress={() => console.log('Pressed')} style={styles.ctaButton}>
-            Calculate Miles
-          </Button>
+        <Button mode="contained" onPress={() => console.log('Pressed')} style={styles.ctaButton}>
+          Calculate Miles
+        </Button>
 
-          <View style={styles.ctaButtonToggle}>
-            <SegmentedButtons
-              value={value}
-              onValueChange={setValue}
-              buttons={[
-                {
-                  value: 'mile',
-                  label: 'Miles',
-                },
-                {
-                  value: 'KM',
-                  label: 'Kilometres',
-                },
-              ]}
-            />
-          </View>
-        </view>
+        <View style={styles.ctaButtonToggle}>
+          <SegmentedButtons
+            value={value}
+            onValueChange={setValue}
+            buttons={[
+              {
+                value: 'mile',
+                label: 'Miles',
+              },
+              {
+                value: 'KM',
+                label: 'Kilometres',
+              },
+            ]}
+          />
+        </View>
       </View>
     </View>
   );
