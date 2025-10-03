@@ -33,41 +33,45 @@ const styles = StyleSheet.create({
 });
 
 const HomeComponent = () => {
-  const [startLocation, setStartLocation] = useState('');
-  const [toLocation, setToLocation] = useState('');
+  const [startLocation, setStartLocation] = useState(0);
+  const [toLocation, setToLocation] = useState(0);
   const [value, setValue] = useState('');
   const [citySuggestions, setCitySuggestions] = useState<any[]>([]);
   const [selectedItem, setSelectedItem] = useState(null);
-  let dropdownData: any[] = [];
+  const [suggestion, setSuggestion] = useState('');
 
   // Debounced API call
   useEffect(() => {
-    if (startLocation.length < 2) {
+    if (suggestion.length < 2) {
       setCitySuggestions([]);
       return;
     }
 
-    const timeoutId = setTimeout(() => {
-      getCityDetails(startLocation);
-    }, 500); // Wait 500ms after user stops typing
+    getCityDetails(suggestion);
 
-    return () => clearTimeout(timeoutId);
-  }, [startLocation]);
+  }, [suggestion]);
 
   const getCityDetails = (text: string) => {
-    CityList(text).then((res) => {
-      if (res && res.data) {
-        setCitySuggestions(res.data); // Store the API response
-        console.log('City suggestions:', res.data);
-      }
-    }).catch((err) => {
-      console.log('Error fetching cities:', err);
-    });
+    CityList(text)
+      .then((res) => {
+        if (res && res.data) {
+          setCitySuggestions(res.data); // Store the API response
+          console.log('City suggestions:', res.data);
+        }
+      })
+      .catch((err) => {
+        console.log('Error fetching cities:', err);
+      });
   };
 
-  const handleStartLocationChange = (text: string) => {
-    setStartLocation(text);
-  };
+  
+  const handleLocationChange = (text: string) => {
+    console.log('To location changed:', text);
+    setSuggestion(text);
+  }
+  const calculateMiles = () => { 
+    console.log('Calculating miles from', startLocation, 'to', toLocation, 'in', value);
+   }
 
   return (
     <View>
@@ -76,22 +80,23 @@ const HomeComponent = () => {
         <Typehead
           data={citySuggestions}
           onSelect={(item) => {
-            console.log('Selected item:', item);
-            setStartLocation(item.name);
+            setStartLocation(item.id);
           }}
           placeholder="Enter start location"
-          onInputChange={handleStartLocationChange}
-        />
-        <TextInput
-          style={{ marginTop: 30 }}
-          label="Enter end location"
-          value={toLocation}
-          mode="outlined"
-          onChangeText={(text) => setToLocation(text)}
-          right={<TextInput.Icon icon="close" onPress={() => setToLocation('')} />}
+          onInputChange={handleLocationChange}
         />
 
-        <Button mode="contained" onPress={() => console.log('Pressed')} style={styles.ctaButton}>
+        <Typehead
+          data={citySuggestions}
+          onSelect={(item) => {
+            console.log('To location selected:', item);
+            setToLocation(item.id);
+          }}
+          placeholder="Enter start location"
+          onInputChange={handleLocationChange}
+        />
+
+        <Button mode="contained" onPress={calculateMiles} style={styles.ctaButton}>
           Calculate Miles
         </Button>
 

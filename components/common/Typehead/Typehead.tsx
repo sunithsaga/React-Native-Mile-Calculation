@@ -10,27 +10,23 @@ interface TypeaheadProps {
   data: TypeaheadItem[];
   onSelect: (item: TypeaheadItem) => void;
   placeholder?: string;
-  onInputChange?: (text: string) => void
+  onInputChange?: (text: string) => void;
 }
 
-export default function Typeahead({ data, onSelect, placeholder = "Type to search...", onInputChange }: TypeaheadProps) {
+export default function Typeahead({
+  data,
+  onSelect,
+  placeholder = 'Type to search...',
+  onInputChange,
+}: TypeaheadProps) {
   const [query, setQuery] = useState('');
   const [filtered, setFiltered] = useState<TypeaheadItem[]>([]);
-  console.log(data,'data in typehead');
 
-  const handleInput = (text:string) => {
-
+  const handleInput = (text: string) => {
+    console.log('Input changed:', text);
     setQuery(text);
-    if (!text) {
-      setFiltered([]);
-      return;
-    }
-    const filteredData = data.filter(item =>
-      item.name.toLowerCase().includes(text.toLowerCase())
-    );
-    console.log(filteredData,'filteredData');
-    setFiltered(filteredData);
-    onInputChange?.(text); 
+    setFiltered(data);
+    onInputChange?.(text);
   };
 
   const handleSelect = (item: TypeaheadItem) => {
@@ -42,22 +38,25 @@ export default function Typeahead({ data, onSelect, placeholder = "Type to searc
   return (
     <View style={styles.container}>
       <TextInput
-        style={styles.input}
-        placeholder={placeholder}
-        value={query}
-        onChangeText={handleInput}
+      style={styles.input}
+      placeholder={placeholder}
+      value={query}
+      onChangeText={(e) => {
+        console.log('Input blurred',e);
+        handleInput(e);
+      }}
       />
       {filtered.length > 0 && (
-        <FlatList
-          data={filtered}
-          keyExtractor={item => item.id.toString()}
-          style={styles.suggestions}
-          renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleSelect(item)}>
-              <Text style={styles.suggestionItem}>{item.name}</Text>
-            </TouchableOpacity>
-          )}
-        />
+      <FlatList
+        data={filtered}
+        keyExtractor={(item) => item.id.toString()}
+        style={styles.suggestions}
+        renderItem={({ item }) => (
+        <TouchableOpacity onPress={() => handleSelect(item)}>
+          <Text style={styles.suggestionItem}>{item.name}</Text>
+        </TouchableOpacity>
+        )}
+      />
       )}
     </View>
   );
