@@ -16,7 +16,7 @@ export const CityList = async (namePrefix: string): Promise<any> => {
   return data;
 };
 
-export const GetMileDetails = async (fromCity: string, toCity: string): Promise<any> => {
+export const GetMileDetails = async (fromCity: number, toCity: number): Promise<any> => {
   const response = await fetch(
     `http://geodb-free-service.wirefreethought.com/v1/geo/places/${fromCity}/distance?toPlaceId=${toCity}`
   );

@@ -1,16 +1,21 @@
-import React, { useState } from 'react';
-import { View, TextInput, FlatList, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, FlatList, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { TextInput } from 'react-native-paper';
 
 interface TypeaheadItem {
   id: number;
   name: string;
+  country: string;
 }
 
 interface TypeaheadProps {
   data: TypeaheadItem[];
   onSelect: (item: TypeaheadItem) => void;
   placeholder?: string;
-  onInputChange?: (text: string) => void;
+  onInputChange: (text: string) => void;
+  clearField: () => void;
+  value: string; // controlled input
+  onValueChange: (val: string) => void; // handler for input value
 }
 
 export default function Typeahead({
@@ -18,45 +23,64 @@ export default function Typeahead({
   onSelect,
   placeholder = 'Type to search...',
   onInputChange,
+  clearField,
+  value,
+  onValueChange
 }: TypeaheadProps) {
-  const [query, setQuery] = useState('');
   const [filtered, setFiltered] = useState<TypeaheadItem[]>([]);
 
-  const handleInput = (text: string) => {
-    console.log('Input changed:', text);
-    setQuery(text);
-    setFiltered(data);
-    onInputChange?.(text);
-  };
+  useEffect(() => {
+    if (value?.length >= 2) {
+      const filteredData = data.filter((item) =>
+        item.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setFiltered(filteredData);
+    } else {
+      setFiltered([]);
+    }
+  }, [value, data]);
 
   const handleSelect = (item: TypeaheadItem) => {
-    setQuery(item.name);
+    const text = `${item.name}, ${item.country}`;
+    onValueChange(text); 
     setFiltered([]);
-    onSelect && onSelect(item);
+    onSelect(item);
+  };
+
+  const handleClear = () => {
+    onValueChange('');    // clear input field
+    setFiltered([]);      // clear suggestions
+    clearField();         // call parent clear logic (e.g., setToLocation(0))
   };
 
   return (
     <View style={styles.container}>
       <TextInput
-      style={styles.input}
-      placeholder={placeholder}
-      value={query}
-      onChangeText={(e) => {
-        console.log('Input blurred',e);
-        handleInput(e);
-      }}
+        style={styles.input}
+        placeholder={placeholder}
+        value={value}
+        onChangeText={(text) => {
+          onValueChange(text);
+          onInputChange?.(text);
+        }}
+        right={
+          value.length > 0 ? (
+            <TextInput.Icon icon="close" style={styles.texticon} onPress={handleClear} />
+          ) : null
+        }
       />
+
       {filtered.length > 0 && (
-      <FlatList
-        data={filtered}
-        keyExtractor={(item) => item.id.toString()}
-        style={styles.suggestions}
-        renderItem={({ item }) => (
-        <TouchableOpacity onPress={() => handleSelect(item)}>
-          <Text style={styles.suggestionItem}>{item.name}</Text>
-        </TouchableOpacity>
-        )}
-      />
+        <FlatList
+          data={filtered}
+          keyExtractor={(item) => item.id.toString()}
+          style={styles.suggestions}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => handleSelect(item)}>
+              <Text style={styles.suggestionItem}>{item.name}, {item.country}</Text>
+            </TouchableOpacity>
+          )}
+        />
       )}
     </View>
   );
@@ -90,8 +114,7 @@ const styles = StyleSheet.create({
     borderColor: '#eee',
     backgroundColor: '#fff',
   },
+  texticon: {
+    marginTop: 10,
+  },
 });
-
-function onInputChange(text: string) {
-  throw new Error('Function not implemented.');
-}
