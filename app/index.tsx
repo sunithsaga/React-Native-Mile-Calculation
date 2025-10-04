@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 import {
   Button,
   Dialog,
@@ -14,7 +14,7 @@ import { HeaderComponent } from '@/components/ui';
 import { CityList, GetMileDetails } from '@/services/api';
 import { Typehead } from '@/components/common';
 import { styles } from './index.styles';
-
+import MapView from 'react-native-maps';
 
 const HomeComponent = () => {
   const [startLocation, setStartLocation] = useState(0);
@@ -36,7 +36,7 @@ const HomeComponent = () => {
   }, [suggestion]);
 
   const getCityDetails = (text: string) => {
-    if(text==='') return; 
+    if (text === '') return;
     CityList(text)
       .then((res) => {
         if (res && res.data) {
@@ -53,7 +53,7 @@ const HomeComponent = () => {
   };
 
   const calculateMiles = () => {
-    if(startLocation===0 || toLocation===0) return;
+    if (startLocation === 0 || toLocation === 0) return;
     GetMileDetails(startLocation, toLocation)
       .then((res) => {
         setDistance(res.data);
@@ -79,6 +79,7 @@ const HomeComponent = () => {
     <PaperProvider>
       <View style={styles.container}>
         <HeaderComponent />
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.centerContainer}>
           {/* Start Location */}
           <View style={styles.typeahead}>
@@ -144,6 +145,7 @@ const HomeComponent = () => {
               ]}
             />
           </View>
+          
           {/* Error Dialog */}
           <Portal>
             <Dialog visible={errorVisible} onDismiss={hideDialog}>
@@ -158,7 +160,20 @@ const HomeComponent = () => {
             </Dialog>
           </Portal>
         </View>
-      </View>
+        <View  style={{ flex: 1, height: 300, width: '100%', marginTop: 20 }}>
+            <MapView
+              style={{ flex: 1 }}
+              initialRegion={{
+                latitude: 51.509722222,
+                longitude: -0.593055555,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}
+            ></MapView>
+          </View>
+        </ScrollView>
+        </View>
+          
     </PaperProvider>
   );
 };
