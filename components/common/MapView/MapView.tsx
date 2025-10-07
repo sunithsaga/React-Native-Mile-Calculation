@@ -36,6 +36,10 @@ export default function RouteMap({ fromLocation, toLocation }:RouteMapProps)   {
     }
   }, []);
 
+  console.log('fromLocation', fromLocation);
+  console.log('toLocation', toLocation);
+  console.log('initialRegion', initialRegion);
+
   return (
     <View style={styles.container}>
       <MapView

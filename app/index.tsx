@@ -15,10 +15,22 @@ import { CityList, GetMileDetails } from '@/services/api';
 import { Typehead } from '@/components/common';
 import { styles } from './index.styles';
 import RouteMap from '@/components/common/MapView/MapView';
+interface Location  {
+  latitude: number;
+  longitude: number;
+};
 
 const HomeComponent = () => {
   const [startLocation, setStartLocation] = useState(0);
   const [toLocation, setToLocation] = useState(0);
+  const [startLocationCoordinate, setStartLocationCoordinate] = useState<Location>({
+    latitude: 0,
+    longitude: 0,
+  });
+  const [toLocationCoordinate, setToLocationCoordinate] = useState<Location>({
+    latitude: 0,
+    longitude: 0,
+  });
   const [citySuggestions, setCitySuggestions] = useState<any[]>([]);
   const [distance, setDistance] = useState(0);
   const [suggestion, setSuggestion] = useState('');
@@ -40,6 +52,7 @@ const HomeComponent = () => {
     CityList(text)
       .then((res) => {
         if (res && res.data) {
+          console.log(res.data,'res.data')
           setCitySuggestions(res.data);
         }
       })
@@ -74,14 +87,6 @@ const HomeComponent = () => {
     }
   };
   const hideDialog = () => setErrorVisible(false);
-  const toRLocation = {
-    latitude: 51.4668,
-    longitude: -0.3507,
-  };
-  const fromRLocation = {
-    latitude: 51.509722222,
-    longitude: -0.593055555,
-  };
 
   return (
     <PaperProvider>
@@ -91,6 +96,7 @@ const HomeComponent = () => {
       >
         <View style={styles.container}>
           <HeaderComponent />
+          
           <View style={styles.centerContainer}>
             {/* Start Location */}
             <View style={styles.typeahead}>
@@ -100,7 +106,9 @@ const HomeComponent = () => {
                 onValueChange={setStartLocationInput}
                 onSelect={(item) => {
                   setStartLocation(item.id);
-                  setStartLocationInput(item.name); // Set selected name
+                  setStartLocationInput(item.name);
+                  setStartLocationCoordinate({latitude: item.latitude, longitude: item.longitude});
+                   // Set selected name
                 }}
                 placeholder="Enter start location"
                 onInputChange={handleLocationChange}
@@ -118,7 +126,8 @@ const HomeComponent = () => {
                 onValueChange={setEndLocationInput}
                 onSelect={(item) => {
                   setToLocation(item.id);
-                  setEndLocationInput(item.name); // Set selected name
+                  setEndLocationInput(item.name);
+                  setToLocationCoordinate({latitude: item.latitude, longitude: item.longitude}); // Set selected name
                 }}
                 placeholder="Enter end location"
                 onInputChange={handleLocationChange}
@@ -173,8 +182,8 @@ const HomeComponent = () => {
           </View>
           <View style={{ flex: 1, height: 300, width: '100%', marginTop: 20 }}>
             <RouteMap
-            fromLocation={toRLocation}
-            toLocation={toRLocation}
+            fromLocation={startLocationCoordinate}
+            toLocation={toLocationCoordinate}
             />
           </View>
         </View>
