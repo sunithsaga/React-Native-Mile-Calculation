@@ -37,25 +37,22 @@ export default function RouteMap({ fromLocation, toLocation }:RouteMapProps)   {
   }, []);
 
   return (
-    <View>
-      map will be here
-     </View> 
-    // <View style={styles.container}>
-    //   <MapView
-    //     ref={mapRef}
-    //     style={styles.map}
-    //     initialRegion={initialRegion}
-    //   >
-    //     <Marker coordinate={fromLocation} title="From" description="Start Location" />
-    //     <Marker coordinate={toLocation} title="To" description="End Location" />
+    <View style={styles.container}>
+      <MapView
+        ref={mapRef}
+        style={styles.map}
+        initialRegion={initialRegion}
+      >
+        <Marker coordinate={fromLocation} title="From" description="Start Location" />
+        <Marker coordinate={toLocation} title="To" description="End Location" />
 
-    //     <Polyline
-    //       coordinates={[fromLocation, toLocation]}
-    //       strokeColor="#000"
-    //       strokeWidth={3}
-    //     />
-    //   </MapView>
-    // </View>
+        <Polyline
+          coordinates={[fromLocation, toLocation]}
+          strokeColor="#000"
+          strokeWidth={3}
+        />
+      </MapView>
+    </View>
   );
 };
 
